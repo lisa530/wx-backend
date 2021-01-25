@@ -5,22 +5,14 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_script import Manager
 # 数据库迁移
 from flask_migrate import Migrate,MigrateCommand
-
-
-def create_applet_app():
-    """定义工厂函数"""
-    app = Flask(__name__)
-
-    return app
-
+# 导入工厂函数
+from applet_app import create_applet_app
+# 导入配置信息的字典
+from config import config_dict
 
 # 实例化工厂函数
-app = create_applet_app()
+app = create_applet_app(config_dict['pro_config'])
 
-# 配置数据库连接信息
-SQLALCHEMY_DATABASE_URI = 'mysql://root:123456@localhost/wenxue'
-# 动态追踪修改信息，不设置会提示警告信息，设置True或False都可以关闭警告信息。
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 # 实例化sqlaclchemy对象,将app绑定到db对象上
 db = SQLAlchemy(app)
 
