@@ -6,7 +6,7 @@
 
 class BaseConfig(object):
     """封装配置类"""
-
+    SECRET_KEY = 'QRDFJIRE-PPJRERR12334'
     DEBUG = None
     # 配置数据库连接信息
     SQLALCHEMY_DATABASE_URI= 'mysql://root:123456@localhost/wenxue'
