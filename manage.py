@@ -1,7 +1,4 @@
-
-# 数据库配置
-from flask_sqlalchemy import SQLAlchemy
-# 脚本管理器
+# 从flask_script中导入脚本管理器
 from flask_script import Manager
 # 数据库迁移
 from flask_migrate import Migrate,MigrateCommand
@@ -23,7 +20,7 @@ app = create_applet_app(config_dict['dev_config'])
 manager = Manager(app)
 
 # 使用迁移框架migrate
-Migrate(app,db)
+Migrate(app,db) # 迁移工具和程序实例app、sqlalchemy实例关联
 # 添加迁移命令,接收两个参数,db,MigrateCommand
 manager.add_command('db',MigrateCommand) # 这个'db'和数据库db对象不是同一个，只是一个字符串的名字
 
