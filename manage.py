@@ -1,4 +1,4 @@
-from flask import Flask,Blueprint
+
 # 数据库配置
 from flask_sqlalchemy import SQLAlchemy
 # 脚本管理器
@@ -11,7 +11,7 @@ from applet_app import create_applet_app
 from config import config_dict
 
 # 实例化工厂函数
-app = create_applet_app(config_dict['pro_config'])
+app = create_applet_app(config_dict['dev_config'])
 
 # 实例化sqlaclchemy对象,将app绑定到db对象上
 db = SQLAlchemy(app)
@@ -24,20 +24,6 @@ manager = Manager(app)
 Migrate(app,db)
 # 添加迁移命令,接收两个参数,db,MigrateCommand
 manager.add_command('db',MigrateCommand) # 这个'db'和数据库db对象不是同一个，只是一个字符串的名字
-
-
-# 创建蓝图对象
-user_bp = Blueprint('user_bp', __name__,url_prefix='/users')
-
-# 将蓝图绑定到路由
-@user_bp.route("/")
-# @app.route("/")
-def index():
-    return "hello lisa"
-
-
-# 注册蓝图
-app.register_blueprint(user_bp)
 
 
 if __name__ == '__main__':
