@@ -25,6 +25,7 @@ class ProductionConfig(BaseConfig):
     DEBUG = False
     pass
 
+
 # 定义字典，实现不同配置类的映射
 config_dict = {
     'base_config': BaseConfig,

@@ -6,9 +6,9 @@ from flask import Blueprint
 user_bp = Blueprint('user_bp', __name__)
 
 # 将蓝图绑定到路由
-@user_bp.route("/")
-# @app.route("/")
-def index():
-    return "hello lisa"
+# @user_bp.route("/")
+# # @app.route("/")
+# def index():
+#     return "hello lisa"
 
 

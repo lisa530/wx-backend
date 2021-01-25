@@ -10,6 +10,9 @@ def create_applet_app(config_name=None):
     from .user import user_bp
     # 注册蓝图
     app.register_blueprint(user_bp)
+    from models import db
+    # 初始化
+    db.init_app(app)
     # 获取配置信息
     app.config.from_object(config_name)
     return app
