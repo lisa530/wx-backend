@@ -18,8 +18,8 @@ def generate_jwt(payload,expire,secret_key=None):
         secret_key = current_app.config['SECRET_KEY']
 
     # 生成jwt_token
-    # algorithm:指定加密方式
-    token = jwt.encode(_payload,secret_key,algorithm=['HS256'])
+    # 接收三个参数：_payload：存储用户有效信息,secret_key密钥，algorithm:指定加密方式
+    token = jwt.encode(_payload,secret_key,algorithm='HS256')
     # 返回解码后的token
     return token.decode()
 

@@ -24,16 +24,17 @@ def _generate_jwt_token(user_id):
     now = datetime.utcnow()
     # 2.根据时间差，指定token的过期时间
     # expire = now + timedelta(hours=24)
-    expire = now + timedelta(hours=current_app.config.get("JWT_EXPIRE_TIME"))
+    expiry = now + timedelta(hours=current_app.config.get("JWT_EXPIRE_TIME"))
     # 3. 调用jwt工具，传入两个参数,当前登录的用户user_id,token过期时间
-    token = generate_jwt({'user_id':user_id,},expire=expire)
+    token = generate_jwt({'user_id':user_id,},expire=expiry)
     # 4.返回token
     return token
+
 
 @user_bp.route('/login',methods=['POST'])
 def login():
     """第三方登录"""
-    # 1.接收前端传递的参数,code（用户登录凭证，有效期5分钟)
+    # 1.获取参数code（用户登录凭证，有效期5分钟)
     # 使用 code 换取 openid 和 session_key 等信息
     code = request.json.get('code','')
     # iv(加密算法初始量)
@@ -48,10 +49,10 @@ def login():
     data = get_wxapp_session_key(code)
     # 判断session_key是否存在
     if 'session_key' not in data:
-        return jsonify(msg='获取session_key信息失败',data=data),500
+        return jsonify(msg='获取session_key信息失败', data=data), 500
     # 4.根据session_key调用微信工具，获取用户信息
     session_key = data['session_key']
-    user_info = get_user_info(envryptedData, iv, session_key)
+    user_info = get_user_info(envryptedData,iv,session_key)
 
     # 判断用户是否获取到openid
     if 'openId' not in user_info:
@@ -114,6 +115,44 @@ def temp_add_user():
     # 3. 返回json数据
     return jsonify(ret_data)
 
+
+@user_bp.route("/temp_login")
+def temp_login():
+    """
+    模拟用户登录
+    流程：
+        1.默认发送的是get请求
+        2. 从查询字符串中获取用户的id
+        3. 登录成功后，生成token, 并将token返回给用户进行保存
+    """
+    # 1.从查询字符串中获取user_id
+    user_id = request.args.get('user_id')
+    # 查询数据对应用户
+    user = User.query.get(user_id)
+    # 用户不存在，返回提示信息
+    if not user:
+        return jsonify(img="用户不存在")
+
+    # 生成token
+    token = _generate_jwt_token(user.id)
+    # 构造数据
+    ret_data = {
+        'token':token,
+        'user_info':{
+            'uid':user.id,
+            'gender':user.gender,
+            'avatarUrl':user.avatarUrl
+        },
+        "config":{
+            "preference": user.preference,
+            "brightness": user.brightness,
+            "fontSize": user.fontSize,
+            "background": user.background,
+            "turn": user.turn
+        }
+    }
+    # 返回json对象
+    return jsonify(ret_data)
 
 
 
