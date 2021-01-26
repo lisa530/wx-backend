@@ -7,6 +7,9 @@
 class BaseConfig(object):
     """封装配置类"""
     SECRET_KEY = 'QRDFJIRE-PPJRERR12334'
+    # jwt_token过期时间
+    JWT_EXPIRE_TIME = 24
+
     DEBUG = None
     # 配置数据库连接信息
     SQLALCHEMY_DATABASE_URI= 'mysql://root:123456@localhost/wenxue'
