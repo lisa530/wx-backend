@@ -10,9 +10,15 @@ def create_applet_app(config_name=None):
     from .user import user_bp
     # 注册蓝图
     app.register_blueprint(user_bp)
+    # 从models文件夹中导入sqlalchemy对象
     from models import db
-    # 初始化
+    # 将app和db对象进行绑定
     db.init_app(app)
     # 获取配置信息
     app.config.from_object(config_name)
+    # 导入请求钩子，用户的权限校验
+    from lib.middlewares import before_request
+    # 相当于@app.before_request
+    app.before_request(before_request)
+
     return app
