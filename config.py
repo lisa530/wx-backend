@@ -16,6 +16,13 @@ class BaseConfig(object):
     # 动态追踪修改信息，不设置会提示警告信息，设置True或False都可以关闭警告信息。
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
+    # 七牛云配置信息
+    QINIU_SETTINGS = {
+        'access_key': '51DGWfSzbBws6szT3GVoZ8nMuqVVFAFV2P_StMbr',
+        'secret_key': 'pAo3kBotA7PQLCuIF9Y2wCc7AfRs0MEss2-qdTbb',
+        'bucket_name': 'hmwx01',
+        'host': 'pu3lpnbqt.bkt.clouddn.com',
+    }
 
 class DevelopmentConfig(BaseConfig):
     """开发配置类"""
