@@ -89,6 +89,35 @@ def login():
     return jsonify(ret_data)
 
 
+@user_bp.route("/temp_add_user",methods=['POST'])
+def temp_add_user():
+    """添加测试用户功能"""
+    # 1. 构造用户对象
+    data = dict(
+        openId = '1'*32,
+        nickName = '测试用户001',
+        gender = 1,
+        city = '广州市',
+        province = '广东省',
+        country = '中国',
+        avatarUrl = 'default'
+    )
+    # 模拟添加用户数据，通过模型类添加到数据库中
+    user = User(data)
+    db.session.add(user)
+    db.session.commit()
+    # 返回添加成功后的用户结果
+    ret_data = {
+        'msg':'添加用户成功',
+        'user_id':user.id
+    }
+    # 3. 返回json数据
+    return jsonify(ret_data)
+
+
+
+
+
 
 
 
