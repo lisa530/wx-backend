@@ -10,6 +10,9 @@ def create_applet_app(config_name=None):
     from .user import user_bp
     # 注册蓝图
     app.register_blueprint(user_bp)
+    from .my_books import my_books_bp
+    app.register_blueprint(my_books_bp)
+
     # 从models文件夹中导入sqlalchemy对象
     from models import db
     # 将app和db对象进行绑定
