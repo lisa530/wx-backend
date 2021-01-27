@@ -39,3 +39,53 @@ def category_list():
 
     # 5.返回分类数据
     return jsonify(cate_list)
+
+
+@category_bp.route('/filters')
+def category_book_list():
+    """
+    获取分类书籍列表
+    :param: page当前所在页
+    :param: pagesize一页显示多少条
+    :param:category_id分类id
+    :param: worlds字数统计
+    :param: order:排序
+    """
+    # 1.接收查询参数
+    page = request.args.get('page',1,int)
+    pagesize = request.args.get('pagesize',10,int)
+    category_id = request.args.get('category_id')
+    words = request.args.get('words')
+    order = request.args.get('order')
+    # 2. 判断分类是否存在
+    if not category_id:
+        return jsonify(msg='缺少分类id'),400
+    # 3.根据分类id作为查询条件，获取一级分类数据
+    categories = BookBigCategory.query.get(category_id=category_id)
+    # 4.根据一级分类获取二级分类数据,通过关系引用获取二级分类
+    # 使用set集合去重
+    seconds_id = set([i.cate_id for i in categories.second_cates])
+    # 5.查询书籍表,获取分类范围内的书籍数据
+    # 保存的是查询结果对象
+    query = Book.query.filter(Book.cate_id.in_(seconds_id))
+    # 6.根据条件words参数查询书籍数据
+    # 1表示50万字以下，2表示50~100万字，3表示100万字以上
+    if words == 1:
+        query = query.filter(Book.word_count < 500000)
+    elif words == 2:
+        query = query.filter(Book.word_count.between(500000,1000000))
+    elif words == 3:
+        query = query.filter(Book.word_count > 1000000)
+    else:
+        return jsonify(msg='参数无效')
+    # 7.根据排序条件order，按照最热、收藏数量进行排序查询
+    # 1表示热销度，2表示按收藏排序
+    if order == 1:
+        query = query.order_by(Book.heat.desc())
+    elif order == 2:
+        quer = query.order_by(Book.heat.desc())
+    else:
+        return jsonify(msg='错误的排序参数'),400
+    pass
+
+
