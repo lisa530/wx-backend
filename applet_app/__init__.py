@@ -14,6 +14,8 @@ def create_applet_app(config_name=None):
     app.register_blueprint(my_books_bp)
     from .category import category_bp
     app.register_blueprint(category_bp)
+    from .search import search_bp
+    app.register_blueprint(search_bp)
 
     # 从models文件夹中导入sqlalchemy对象
     from models import db
