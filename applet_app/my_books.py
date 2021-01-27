@@ -86,6 +86,27 @@ def add_book(book_id):
     return jsonify(msg='书架中该书籍已在存在'),404
 
 
+@login_required
+@my_books_bp.route("/<book_id>", methods=['DELETE'])
+def del_book(book_id):
+    """删除书籍"""
+    # 1.添加登录装饰器，获取用户信息
+    user_id = g.user_id
+    # 2. 查询书架中要删除的书籍：
+    # 使用 user_id和 书籍id作为查询条件
+    bk_shelf = BookShelf.query.filter_by(user_id=user_id,book_id=book_id).first()
+    # 3. 如果删除的书籍不在书架中则提示
+    if not bk_shelf:
+        return jsonify(msg='该书籍在书架中不存在'),404
+    # 4. 存在，则删除并提交到数据库
+    db.session.delete(bk_shelf)
+    db.session.commit()
+    # 5. 返回删除后的信息
+    return jsonify(msg='删除书籍成功')
+
+
+
+
 
 
 
