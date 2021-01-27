@@ -5,7 +5,7 @@ from flask import Blueprint,g,current_app,jsonify
 # 导入登录验证装饰器
 from lib.decoraters import login_required
 # 导入书架模型类
-from models import Book,BookShelf,db,User
+from models import Book,BookShelf,db,User,BookChapters,ReadRate
 
 # 创建蓝图对象
 my_books_bp = Blueprint('mybook',__name__,url_prefix='/mybooks')
@@ -103,6 +103,64 @@ def del_book(book_id):
     db.session.commit()
     # 5. 返回删除后的信息
     return jsonify(msg='删除书籍成功')
+
+
+@login_required
+@my_books_bp.route("/last")
+def book_last_reading():
+    """获取最后阅读的书籍"""
+    # 1.从g对象中获取用户信息
+    user_id = g.user_id
+    # 2. 查询用户是否存在
+    user = User.query.get(user_id)
+    read_rate = None # 阅读进度默认为None
+    # 3. 判断用户是否阅读书籍
+    if not user.last_read:
+        # 用户没有阅读，默认查询书籍表的第一本书籍 作为用户阅读的书籍
+        book = Book.query.first()
+        # 将用户阅读的书籍id绑定到user对象中的last_read属性中
+        user.last_read = book.book_id
+        # 查询该书籍的章节信息，按章节id升序排序
+        bk_chapter = BookChapters.query.filter_by(book_id=book.book_id).order_by(BookChapters.chapter_id.asc()).first()
+        #  将阅读书籍的章节id保存到用户表中last_read_chapter_id中
+        user.last_read_chapter_id = bk_chapter.chapter_id
+        # 将查询结果保存到阅读进度表中
+        read_rate = ReadRate(
+            user_id=user_id, # 用户id
+            book_id = book.book_id, # 书籍id
+            chapter_id=bk_chapter.chapter_id, # 章节id
+            chapter_name=bk_chapter.chapter_name # 章节名称
+        )
+        # 4.保存数据，不仅要保存用户表也要保存阅读进度表
+        # db.session.add(read_rate)
+        # db.session.add(user)
+        db.session.add_all([read_rate,user])
+        db.session.commit()
+    else:
+        # 5. 用户已阅读过书籍，查询用户最后阅读的书籍信息
+        book = Book.query.get(user.last_read)
+        # 如果用户没有阅读进度，查询阅读进度表，返回第一章的信息
+    if not read_rate:
+        read_rate = ReadRate.query.filter_by(
+            user_id=user.id, # 用户id
+            book_id = book.book_id, # 书籍id
+            chapter_id=user.last_read_chapter_id # 最后阅读的章节id
+        ).first()
+
+    # 7.构造字典
+    data ={
+        'id':book.book_id,
+        'title':book.book_name, # 书籍名称
+        'chapter':read_rate.chapter_name, # 最后阅读章节名称
+        'progress': read_rate.rate, # 阅读进度
+        # 书籍封面图片地址
+        'imgURL':'http://{}/{}'.format(current_app.config['QINIU_SETTINGS']['host'],book.cover)
+    }
+    # 转成json格式返回
+    return jsonify(data)
+
+
+
 
 
 
