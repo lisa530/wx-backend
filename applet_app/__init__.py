@@ -17,6 +17,7 @@ def create_applet_app(config_name=None):
     from .search import search_bp
     app.register_blueprint(search_bp)
 
+
     # 从models文件夹中导入sqlalchemy对象
     from models import db
     # 将app和db对象进行绑定
