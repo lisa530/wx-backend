@@ -1,5 +1,5 @@
 from flask import Blueprint,request,jsonify,current_app
-from sqlalchemy import not_
+from sqlalchemy import not_,or_
 
 from models import SearchKeyWord, Book, db
 
@@ -15,7 +15,9 @@ def tag_list():
     if not key_word:
         return jsonify([])
     # 3. 查询关键词表,查询条件为：搜索的key_word包含在模型类的keyword字段中，默认返回10条数据
-    search_list = SearchKeyWord.query.filter(SearchKeyWord.keyword.concat(key_word)).limit(10)
+    # search_list = SearchKeyWord.query.filter(SearchKeyWord.keyword.concat(key_word)).limit(10)
+    # 查询关键词表,查询条件为：搜索的key_word包含在模型类的keyword字段中,或 关键词是否为热门的条件，默认返回10条数据补
+    search_list = SearchKeyWord.query.filter(or_(SearchKeyWord.is_hot==True,SearchKeyWord.keyword.concat(key_word))).limit(10)
     # 4.构造字典，将遍历后的查询对象放至字典中
     # data = []
     # # 遍历对象
