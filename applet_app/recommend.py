@@ -48,3 +48,4 @@ def recommends(category_id):
 
     # 7.转成json格式，返回书籍列表数据
     return jsonify(books)
+

@@ -114,7 +114,7 @@ def category_book_list():
         })
     # 9.将分页数据构造成字典，转换为json数据返回
     json_data = {
-        'counts': paginate.total,  # 分页后的总页数
+        'counts': paginate.total,  # 分页后的数据总条数
         'pagesize': pagesize,  # 一页显示多少条数据
         'pages': paginate.pages, # 总页数
         'page': paginate.page, # 当前所在页

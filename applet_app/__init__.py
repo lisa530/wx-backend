@@ -18,6 +18,8 @@ def create_applet_app(config_name=None):
     app.register_blueprint(search_bp)
     from .recommend import recommend_bp
     app.register_blueprint(recommend_bp)
+    from .book import book_bp
+    app.register_blueprint(book_bp)
 
     # 从models文件夹中导入sqlalchemy对象
     from models import db
