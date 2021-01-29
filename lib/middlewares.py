@@ -7,6 +7,7 @@ def before_request():
     登录用户校验中间件
     需求：有些接口必须要用户登录才能进入到视图，需要校验用户身份信息
     """
+    g.user_id = None
     # 1.从前端请求头中获取Authorization参数
     auth = request.headers.get('Authorization')
     if auth:
