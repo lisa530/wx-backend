@@ -1,7 +1,7 @@
 from flask import Blueprint,request,current_app,jsonify,g
 from datetime import datetime
 
-from models import Book,BookChapters,BookChapterContent,ReadRate
+from models import Book,BookChapters,BookChapterContent,ReadRate,BrowseHistory,db
 
 # 创建蓝图对象
 book_bp = Blueprint('book',__name__,url_prefix='/book')
@@ -81,4 +81,42 @@ def reader_book(book_id):
         'atricle_content':content.content if content else '' # 章节内容
     }
     # 7. 返回结果
+    return jsonify(data)
+
+
+@book_bp.route('/<book_id>')
+def book_detail(book_id):
+    """浏览记录"""
+    # 1.查询书籍表,根据书籍id查询
+    book = Book.query.get(book_id)
+    # 2. 判断书籍是否存在
+    if not book:
+        return jsonify(msg='书籍不存在'),404
+    # 3. 用户如果登录，查询用户浏览历史记录
+    if g.user_id:
+        # 查询BrowseHistory表，根据book_id和user_id进行过滤查询
+        bs_data = BrowseHistory.query.filetr_by(book_id=book_id,user_id=g.user_id).first()
+        # 如果没有查询到浏览记录，将book_id和user_id进行初始化保存到数据库
+        if not bs_data:
+            bs_data = BrowseHistory.query.filetr_by(user_id=g.user_id,book_id=book_id)
+        bs_data.update = datetime.now() # 保存浏览记录为当前时间
+        db.session.add(bs_data)
+        db.session.commit()
+    # 5. 用户未登录,查询章节表，根据book_id过滤查询,按chapter_id倒序排序
+    chapter = BookChapters.query.filter_by(book_id=book_id).order_by(BookChapters.chapter_id.desc()).first()
+
+    # 6. 构造响应数据,返回书籍信息
+    data = {
+        'id':book.book_id,
+        'title':book.book_name,
+        'intro':book.intro,
+        'author':book.author_name,
+        'status':book.status, # 状态
+        'cate_id':book.cate_id,
+        'cate_name':book.cate_name,
+        'words_count':book.word_count, # 字数
+        'lastChapter':chapter.chapter_name if chapter else None, # 最后阅读的章节名称
+        'imgURL':'http://{}/{}'.format(current_app.config['QINIU_SETTINGS']['host'],book.cover),
+    }
+    # 返回json数据
     return jsonify(data)
