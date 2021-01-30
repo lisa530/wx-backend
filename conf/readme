@@ -1,0 +1,2 @@
+# 在项目虚拟环境下运行如下命令
+uwsgi conf/uwsgi_applet_local.ini
