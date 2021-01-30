@@ -86,7 +86,7 @@ def reader_book(book_id):
 
 @book_bp.route('/<book_id>')
 def book_detail(book_id):
-    """浏览记录"""
+    """小说详情页"""
     # 1.查询书籍表,根据书籍id查询
     book = Book.query.get(book_id)
     # 2. 判断书籍是否存在
