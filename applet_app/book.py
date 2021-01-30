@@ -98,7 +98,7 @@ def book_detail(book_id):
         bs_data = BrowseHistory.query.filter_by(user_id=g.user_id,book_id=book_id).first()
         # 如果没有查询到浏览记录，将book_id和user_id进行初始化保存到数据库
         if not bs_data:
-            bs_data = BrowseHistory.query.filter_by(user_id=g.user_id,book_id=book_id)
+            bs_data = BrowseHistory(user_id=g.user_id,book_id=book_id)
         bs_data.updated = datetime.now() # 保存浏览记录为当前时间
         db.session.add(bs_data)
         db.session.commit()
