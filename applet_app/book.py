@@ -95,11 +95,11 @@ def book_detail(book_id):
     # 3. 用户如果登录，查询用户浏览历史记录
     if g.user_id:
         # 查询BrowseHistory表，根据book_id和user_id进行过滤查询
-        bs_data = BrowseHistory.query.filetr_by(book_id=book_id,user_id=g.user_id).first()
+        bs_data = BrowseHistory.query.filter_by(user_id=g.user_id,book_id=book_id).first()
         # 如果没有查询到浏览记录，将book_id和user_id进行初始化保存到数据库
         if not bs_data:
-            bs_data = BrowseHistory.query.filetr_by(user_id=g.user_id,book_id=book_id)
-        bs_data.update = datetime.now() # 保存浏览记录为当前时间
+            bs_data = BrowseHistory.query.filter_by(user_id=g.user_id,book_id=book_id)
+        bs_data.updated = datetime.now() # 保存浏览记录为当前时间
         db.session.add(bs_data)
         db.session.commit()
     # 5. 用户未登录,查询章节表，根据book_id过滤查询,按chapter_id倒序排序
