@@ -56,3 +56,4 @@ def delete_history():
     db.session.commit()
     # 3. 返回结果
     return jsonify(msg='删除成功')
+
